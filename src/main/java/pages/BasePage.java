@@ -2,10 +2,8 @@ package pages;
 
 import cucumber.api.java.After;
 import org.junit.Assert;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.json.JsonOutput;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -16,6 +14,7 @@ import java.util.List;
 public class BasePage {
     protected WebDriver driver = DriverManager.getDriver();
     protected WebDriverWait wait = new WebDriverWait(driver, 5,100);
+    protected JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
 
     public BasePage() {
         PageFactory.initElements(driver, this);
@@ -34,6 +33,7 @@ public class BasePage {
     }
 
     public void clickElem(WebElement element) {
+
         wait.until(ExpectedConditions.elementToBeClickable(element)).click();
     }
     public void fillField(WebElement element, String text){

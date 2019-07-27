@@ -6,8 +6,7 @@ import cucumber.api.java.ru.Когда;
 import cucumber.api.java.ru.Тогда;
 
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
+
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.BasketPage;
@@ -45,11 +44,24 @@ public class CucumberSteps {
     }
     @Тогда("Ограничить цену сверху до {int}")
     public void setMaxPrice(int price){
-        if(price < 13 || price > 121048) Assert.fail(String.format("Цена %d не в диапазоне", price));//Исправить для возможных изменений диапазона
-//ИСПРАВИТЬ
-        shopPage.fillField(shopPage.getMaxPrice(), "\b\b"+price+"\n"); //Временный вариант
+        /*WebElement autofill = shopPage.getMinPrice();
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0; i<autofill.getAttribute("value").length(); i++){
+            builder.append("\b");
+        }
+        //builder.append(price + " \n");*/
+        shopPage.fillField(shopPage.getMaxPrice(), "\b\b\b" + price + "\n");
         try {
             Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    @Допустим("Выбрать бренды")
+    public void selectBrands(List<String> brandList){
+        shopPage.selectBrand(brandList);
+        try {
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -61,47 +73,52 @@ public class CucumberSteps {
             i = 1;
             step = 2;
             count*=2;
-            stepForAdd = 1;
         }
         else if (rule.equals("четные")){
             i = 2;
             step = 2;
             count*=2;
             count++;
-            stepForAdd = 2;
         }
         else {
             i = 1;
             step = 1;
-            stepForAdd = i;
         }
+        stepForAdd = i;
         for(; i<count; i+=step){
             //WebElement product = shopPage.getElementFromGoodsList(i);
             String nameElement = shopPage.getProductName(i);
             String priceElement = shopPage.getProductPrice(i);
-            shopPage.buysMap.put(nameElement, priceElement);
+            shopPage.buysMap.put(nameElement, shopPage.getProductPriceFromString(priceElement));
             shopPage.addProductToBasket(stepForAdd++);
         }
     }
     @Допустим("Проверить что все товары добавлены в корзину")
     public void checkProductsInBasket(){
         mainPage.clickElem(mainPage.getGoToBasket());
-        /*for(Map.Entry<String, String> pair : shopPage.buysMap.entrySet()){
-            System.out.println(pair.getKey() + "  " + pair.getValue());
+        /*for(Map.Entry<String, Integer> pair : shopPage.buysMap.entrySet()){
+            System.out.println(pair.getKey() + " "+ pair.getValue());
         }
         System.out.println("В корзине");
-        for(Map.Entry<String, String> pair : basketPage.baskerContains().entrySet()){
-            System.out.println(pair.getKey() + "  " + pair.getValue());
+        for(Map.Entry<String, String > pair : basketPage.baskerContains().entrySet()){
+            System.out.println(pair.getKey() + " "+ pair.getValue());
         }*/
+
+
         if(shopPage.buysMap.size()!=basketPage.baskerContains().size()) Assert.fail("Ошибка с добавлением в корзину");
-        for(Map.Entry<String, String> pair : shopPage.buysMap.entrySet()){
+        for(Map.Entry<String, Integer> pair : shopPage.buysMap.entrySet()){
             if(!basketPage.baskerContains().containsKey(pair.getKey()))
-                Assert.fail("Ошибка с добавлением в корзину. Нет" + pair.getKey());
+                Assert.fail("Ошибка с добавлением в корзину. Нет " + pair.getKey());
         }
     }
     @Допустим("Проверить, что итоговая цена равна сумме цен добавленных товаров")
     public void checkProductsPriceInBasket(){
-
+        int sumInBasket = basketPage.getSumma();
+        int sumOfAddedProducts = 0;
+        for(Map.Entry<String, Integer> pair : shopPage.buysMap.entrySet()){
+            sumOfAddedProducts+=pair.getValue();
+        }
+        Assert.assertEquals("Несоответствие суммарной стоимости товаров сумме, указанной в корзине", sumOfAddedProducts, sumInBasket);
     }
     @Допустим("Удалить все товары из корзины")
     public void delAllProductsFromBasker(){

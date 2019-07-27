@@ -16,6 +16,12 @@ public class MainPage extends BasePage {
     @FindBy(xpath = "//button[@data-test-id='header-search-go']")
     private WebElement searchButton;
 
+    //Временные
+    @FindBy(xpath = "//span[@data-test-id='header-my-ozon-title']")
+    private WebElement getIn;
+    @FindBy(xpath = "//span[contains(text(), 'Корзина')]")
+    private WebElement goToBasket;
+
     //Autoriz
     @FindBy(xpath = "//div[@class='modal-content']")
     private WebElement logInForm;
@@ -30,12 +36,13 @@ public class MainPage extends BasePage {
 
     public void logIn(String login, String password){
         //clickElem(findElemByName(mainBar, "Войти"));
-        clickElem(driver.findElement(By.xpath("//span[@data-test-id='header-my-ozon-title']")));
+        DriverManager.getDriver().navigate().refresh();
+        clickElem(getIn);
         clickElem(goToEmailLink);
         fillField(emailInput, login);
         fillField(passwordInput, password);
         clickElem(inputButton);
-        //div[@class='_327ec']
+
     }
     public void logOut(){
         WebElement quit = findElemByName(mainBar, "Кабинет");
@@ -53,5 +60,9 @@ public class MainPage extends BasePage {
 
     public List<WebElement> getMainBar() {
         return mainBar;
+    }
+
+    public WebElement getGoToBasket() {
+        return goToBasket;
     }
 }

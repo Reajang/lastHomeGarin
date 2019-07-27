@@ -2,6 +2,8 @@ package pages;
 
 import cucumber.api.java.After;
 import org.junit.Assert;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -49,4 +51,7 @@ public class BasePage {
     public void quit(){
         DriverManager.closeDriver();
     }*/
+    public byte[] takeScreenshot(){
+        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+    }
 }

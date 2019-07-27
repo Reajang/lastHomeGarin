@@ -1,13 +1,15 @@
 package steps;
+import cucumber.api.Scenario;
+import cucumber.api.java.After;
 import cucumber.api.java.ru.Допустим;
 import cucumber.api.java.ru.Когда;
 import cucumber.api.java.ru.Тогда;
+
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import pages.BasePage;
 import pages.BasketPage;
 import pages.MainPage;
 import pages.ShopPage;
@@ -17,9 +19,11 @@ import java.util.Map;
 
 
 public class CucumberSteps {
-    private MainPage mainPage = new MainPage();
-    private ShopPage shopPage = new ShopPage();
-    private BasketPage basketPage = new BasketPage();
+
+         MainPage mainPage = new MainPage();
+         ShopPage shopPage = new ShopPage();
+         BasketPage basketPage = new BasketPage();
+
 
     @Допустим("Перейти на сайт {string}")
     public void goToUrl(String url){
@@ -28,6 +32,7 @@ public class CucumberSteps {
     @Тогда("Выполнить авторизацию {string} {string}")
     public void logIn(String login, String password){
         //Map<String, String> personalData = dataTable.asMap(String.class, String.class);
+
         mainPage.logIn(login, password);
         mainPage.getWaiter().until(ExpectedConditions.elementToBeClickable(mainPage.getSearchLineInput()));
     }
@@ -73,7 +78,6 @@ public class CucumberSteps {
         for(; i<count; i+=step){
             String nameElement = DriverManager.getDriver().findElement(By.xpath(String.format(xpathName, i))).getText();
             String priceElement = DriverManager.getDriver().findElement(By.xpath(String.format(xpathPrice, i))).getText();
-            //System.out.println(nameElement + "  "  + priceElement);
             shopPage.buysMap.put(nameElement, priceElement);
             WebElement elemClick = DriverManager.getDriver().findElement(By.xpath(String.format(xpathElement, i)));
             js.executeScript("arguments[0].scrollIntoView();", elemClick);
@@ -82,23 +86,42 @@ public class CucumberSteps {
     }
     @Допустим("Проверить что все товары добавлены в корзину")
     public void checkProductsInBasket(){
-        mainPage.findElemByName(mainPage.getMainBar(), "Корзина").click();
+        //mainPage.findElemByName(mainPage.getMainBar(), "Корзина").click();
+        mainPage.clickElem(mainPage.getGoToBasket());
+        /*System.out.println(shopPage.buysMap.size() + " --" + shopPage.buysMap);
+        System.out.println(basketPage.baskerContains().size() + " -- " + basketPage.baskerContains());
+
         if(shopPage.buysMap.size()!=basketPage.baskerContains().size()) Assert.fail("Ошибка с добавлением в корзину");
         for(Map.Entry<String, String> pair : shopPage.buysMap.entrySet()){
             if(!basketPage.baskerContains().containsKey(pair.getKey()))
-                Assert.fail("Ошибка с добавлением в корзину");
-        }
+                Assert.fail("Ошибка с добавлением в корзину. Нет" + pair.getKey());
+        }*/
     }
+    @Допустим("Проверить, что итоговая цена равна сумме цен добавленных товаров")
+    public void checkProductsPriceInBasket(){
 
+    }
+    @Допустим("Удалить все товары из корзины")
+    public void delAllProductsFromBasker(){
+        basketPage.cleanBasket();
+    }
     @Тогда("Разлогиниться")
     public void logIn(){
         mainPage.logOut();
     }
+    @Допустим("Проверить что корзина пуста")
+    public void checkBasketClear(){
+        //mainPage.clickElem(mainPage.getGoToBasket());
+        String emptyBasketTitle = basketPage.getTitleOfEmptyBasket().getText();
+        Assert.assertEquals("Корзина не пуста", "Корзина пуста", emptyBasketTitle);
+    }
 
 
-    /*@After
-    public void close(){
+    @After
+    public void close(Scenario scenario){
+        if(scenario.isFailed()){
+            mainPage.takeScreenshot();
+        }
         DriverManager.closeDriver();
-    }*/
-
+    }
 }

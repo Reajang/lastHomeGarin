@@ -36,13 +36,11 @@ public class DriverManager {
                 driver = new ChromeDriver();
         }
         driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
     public static void closeDriver() {
-        /*for (String windowHandler : driver.getWindowHandles())
-            driver.switchTo().window(windowHandler).close();*/
         driver.quit();
     }
 

@@ -15,6 +15,7 @@ import pages.MainPage;
 import pages.ShopPage;
 import util.DriverManager;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -48,54 +49,55 @@ public class CucumberSteps {
 //ИСПРАВИТЬ
         shopPage.fillField(shopPage.getMaxPrice(), "\b\b"+price+"\n"); //Временный вариант
         try {
-            Thread.sleep(5000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
     @Допустим("Добавить {int} товаров в корзину. Условие - {string}")
     public void addTobasket(int count, String rule){
-        int i, step;
+        int i, step, stepForAdd;
         if(rule.equals("нечетные")){
             i = 1;
             step = 2;
             count*=2;
+            stepForAdd = 1;
         }
         else if (rule.equals("четные")){
             i = 2;
             step = 2;
             count*=2;
             count++;
+            stepForAdd = 2;
         }
         else {
             i = 1;
             step = 1;
+            stepForAdd = i;
         }
-        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-        String xpathElement = "(//div[@class='tile m-default m-border']//descendant::button)[%d]";
-        String xpathName = "(//div[@class='tile m-default m-border']//a[@data-test-id='tile-name'])[%d]";
-        String xpathPrice = "(//div[@class='tile m-default m-border']//span[@data-test-id='tile-price'])[%d]";
         for(; i<count; i+=step){
-            String nameElement = DriverManager.getDriver().findElement(By.xpath(String.format(xpathName, i))).getText();
-            String priceElement = DriverManager.getDriver().findElement(By.xpath(String.format(xpathPrice, i))).getText();
+            //WebElement product = shopPage.getElementFromGoodsList(i);
+            String nameElement = shopPage.getProductName(i);
+            String priceElement = shopPage.getProductPrice(i);
             shopPage.buysMap.put(nameElement, priceElement);
-            WebElement elemClick = DriverManager.getDriver().findElement(By.xpath(String.format(xpathElement, i)));
-            js.executeScript("arguments[0].scrollIntoView();", elemClick);
-            elemClick.click();
+            shopPage.addProductToBasket(stepForAdd++);
         }
     }
     @Допустим("Проверить что все товары добавлены в корзину")
     public void checkProductsInBasket(){
-        //mainPage.findElemByName(mainPage.getMainBar(), "Корзина").click();
         mainPage.clickElem(mainPage.getGoToBasket());
-        /*System.out.println(shopPage.buysMap.size() + " --" + shopPage.buysMap);
-        System.out.println(basketPage.baskerContains().size() + " -- " + basketPage.baskerContains());
-
+        /*for(Map.Entry<String, String> pair : shopPage.buysMap.entrySet()){
+            System.out.println(pair.getKey() + "  " + pair.getValue());
+        }
+        System.out.println("В корзине");
+        for(Map.Entry<String, String> pair : basketPage.baskerContains().entrySet()){
+            System.out.println(pair.getKey() + "  " + pair.getValue());
+        }*/
         if(shopPage.buysMap.size()!=basketPage.baskerContains().size()) Assert.fail("Ошибка с добавлением в корзину");
         for(Map.Entry<String, String> pair : shopPage.buysMap.entrySet()){
             if(!basketPage.baskerContains().containsKey(pair.getKey()))
                 Assert.fail("Ошибка с добавлением в корзину. Нет" + pair.getKey());
-        }*/
+        }
     }
     @Допустим("Проверить, что итоговая цена равна сумме цен добавленных товаров")
     public void checkProductsPriceInBasket(){

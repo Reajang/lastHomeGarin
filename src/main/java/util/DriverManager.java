@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class DriverManager {
     private static WebDriver driver;
     private static final Properties PROPERTIES = new Properties();
-
     public static void initDriver() {
         try {
             PROPERTIES.load(new FileInputStream(new File("src/main/resources/driver.PROPERTIES")));

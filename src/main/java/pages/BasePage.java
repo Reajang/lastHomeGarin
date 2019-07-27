@@ -54,4 +54,11 @@ public class BasePage {
     public byte[] takeScreenshot(){
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
     }
+    public Integer getProductPriceFromString(String price){
+        StringBuilder builder = new StringBuilder();
+        for(char x : price.toCharArray()){
+            if(Character.isDigit(x)) builder.append(x);
+        }
+        return Integer.parseInt(builder.toString());
+    }
 }

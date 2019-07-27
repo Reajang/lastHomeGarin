@@ -1,17 +1,21 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import util.DriverManager;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ShopPage extends BasePage {
 
-    public Map<String, String> buysMap = new HashMap<>();
+    public Map<String, String> buysMap = new LinkedHashMap<>();
 
     @FindBy(xpath = "//div[@class='tile m-default m-border']")
     private List<WebElement> allGoods;
@@ -30,21 +34,49 @@ public class ShopPage extends BasePage {
         return allGoods;
     }
 
-    /*public Integer getProductPrice(WebElement element){
-        String price = element.findElement(By.xpath("//span[@class='total-price']")).getText();
-        StringBuilder builder = new StringBuilder();
-        for(char x : price.toCharArray()){
-            if(Character.isDigit(x)) builder.append(x);
+
+    /*public void addProductToBasket(WebElement product){
+        WebElement buttonAdd = product.findElement(By.xpath("/descendant::button[@class='button blue enlarged buy-text-button']"));
+        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
+        js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", buttonAdd);
+        clickElem(buttonAdd);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        return Integer.parseInt(builder.toString());
+        //this.getWaiter().until(ExpectedConditions.invisibilityOf(buttonAdd.findElement(By.xpath("//child::span"))));
     }*/
-    public void addProductToBasket(WebElement element){
-        clickElem(element.findElement(By.xpath("//descendant::button//descendant::span")));
+    public WebElement getElementFromGoodsList(int num){
+        return DriverManager.getDriver().findElement(By.xpath(String.format("//div[@class='tile m-default m-border'][%d]", num)));
+        //return allGoods.get(num);
     }
-    public List<String> getProductPrice(WebElement element){
-        return element.findElements(By.xpath("//span[@data-test-id='tile-price']")).stream().map(WebElement::getText).collect(Collectors.toList());
+    /*public String getProductPrice(WebElement product){
+        WebElement price = product.findElement(By.xpath("/descendant::span[@data-test-id='tile-price']"));
+        return price.getText();
     }
-    public List<String> getProductName(WebElement element){
-        return element.findElements(By.xpath("//a[@data-test-id='tile-name']")).stream().map(WebElement::getText).collect(Collectors.toList());
+    public String getProductName(WebElement product){
+        WebElement name = product.findElement(By.xpath("/descendant::a[@data-test-id='tile-name']"));
+        return name.getText();
+    }*/
+    public String getProductPrice(int num){
+        WebElement price = DriverManager.getDriver().findElement(By.xpath(String.format("(//div[@class='tile m-default m-border']/descendant::span[@data-test-id='tile-price'])[%d]", num)));
+        return price.getText();
+    }
+    public String getProductName(int num){
+        WebElement name = DriverManager.getDriver().findElement(By.xpath(String.format("(//div[@class='tile m-default m-border']/descendant::a[@data-test-id='tile-name'])[%d]", num)));
+        return name.getText();
+    }
+    public void addProductToBasket( int num){
+        WebElement buttonAdd = DriverManager.getDriver().findElement(By.xpath(String.format("(//div[@class='tile m-default m-border']/descendant::button[@class='button blue enlarged buy-text-button'])[%d]", num)));
+        JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
+        js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", buttonAdd);
+        clickElem(buttonAdd);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //this.getWaiter().until(ExpectedConditions.invisibilityOf(buttonAdd.findElement(By.xpath("//child::span"))));
     }
 }

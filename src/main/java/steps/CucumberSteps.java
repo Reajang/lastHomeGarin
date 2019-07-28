@@ -12,6 +12,7 @@ import pages.BasketPage;
 import pages.MainPage;
 import pages.ShopPage;
 import util.DriverManager;
+
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -42,8 +43,6 @@ public class CucumberSteps {
         //mainPage.getWaiter().until(ExpectedConditions.invisibilityOf(mainPage.getLogInForm()));
     }*/
 
-
-
     @Когда("Выполнить поиск по {string}")
     public void search(String seachingItem) {
         while (!seachingItem.equals(mainPage.getSearchLineInput().getAttribute("value")))
@@ -55,7 +54,7 @@ public class CucumberSteps {
     public void setMaxPrice(int price) {
         WebElement autofill = shopPage.getMaxPrice();
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i<autofill.getAttribute("value").length(); i++){
+        for (int i = 0; i < autofill.getAttribute("value").length(); i++) {
             builder.append("\b");
         }
         //Так работает стабильнее, чем при использовании clear()
@@ -73,12 +72,11 @@ public class CucumberSteps {
     public void addTobasket(int count, String rule) {
         int i, step;
         if (rule.equals("нечетные")) {
-            i = 1;
+            i = 0;
             step = 2;
             count *= 2;
-        }
-        else if (rule.equals("четные")) {
-            i = 2;
+        } else if (rule.equals("четные")) {
+            i = 1;
             step = 2;
             count *= 2;
             count++;
@@ -93,8 +91,7 @@ public class CucumberSteps {
             shopPage.buysMap.put(nameElement, shopPage.getProductPriceFromString(priceElement));
             try {
                 shopPage.addProductToBasket(product);
-            }
-            catch (NoSuchElementException e) {
+            } catch (NoSuchElementException e) {
                 Assert.fail("Нет в наличии " + nameElement + "\nНельзя добавить в корзину");
             }
         }
@@ -134,7 +131,7 @@ public class CucumberSteps {
     @Допустим("Проверить что корзина пуста")
     public void checkBasketClear() {
         //mainPage.clickElem(mainPage.getGoToBasket());
-        String emptyBasketTitle = basketPage.getTitleOfEmptyBasket().getText();
+        String emptyBasketTitle = basketPage.getTitleOfBasket().getText();
         Assert.assertEquals("Корзина не пуста", "Корзина пуста", emptyBasketTitle);
     }
 
@@ -143,6 +140,11 @@ public class CucumberSteps {
     public void close(Scenario scenario) {
         if (scenario.isFailed()) {
             mainPage.takeScreenshot();
+            mainPage.goToBasket();
+            String basketTitle = basketPage.getTitleOfBasket().getText();
+            if (!basketTitle.equals("Корзина пуста")) {
+                delAllProductsFromBasker();
+            }
         }
         DriverManager.closeDriver();
     }

@@ -1,6 +1,7 @@
 package pages;
 
 import cucumber.api.java.After;
+import io.qameta.allure.Attachment;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.json.JsonOutput;
@@ -44,6 +45,7 @@ public class BasePage {
         return wait;
     }
 
+    @Attachment(value = "Error screenshot", type = "image/png")
     public byte[] takeScreenshot() {
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
     }

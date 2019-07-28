@@ -5,7 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import util.DriverManager;
-import java.util.HashMap;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +20,13 @@ public class BasketPage extends BasePage {
     private WebElement selectAllProducts;
     @FindBy(xpath = "//button[@data-test-id='checkcart-confirm-modal-confirm-button']")
     private WebElement confirmDelete;
-    @FindBy(xpath = "//h1")
-    private WebElement titleOfEmptyBasket;
+    @FindBy(xpath = "//div[@class='content']/descendant::*[contains(text(), 'Корзина')]")//h1
+    private WebElement titleOfBasket;
     @FindBy(xpath = "//div[@data-test-id='total-price-block']/descendant::span[@class='price-number']")
     private WebElement summa;
 
-    public WebElement getTitleOfEmptyBasket() {
-        return titleOfEmptyBasket;
+    public WebElement getTitleOfBasket() {
+        return titleOfBasket;
     }
 
     public List<WebElement> getListOfBuys() {

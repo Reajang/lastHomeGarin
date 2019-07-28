@@ -13,14 +13,13 @@ import java.util.List;
 
 public class BasePage {
     protected WebDriver driver = DriverManager.getDriver();
-    protected WebDriverWait wait = new WebDriverWait(driver, 5,100);
+    protected WebDriverWait wait = new WebDriverWait(driver, 5, 100);
     protected JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
 
     public BasePage() {
         PageFactory.initElements(driver, this);
     }
 
-    //Не работает для MainPage
     public WebElement findElemByName(List<WebElement> elements, String name) {
         for (WebElement x : elements) {
             if (x.getText().equalsIgnoreCase(name)) {
@@ -33,31 +32,26 @@ public class BasePage {
     }
 
     public void clickElem(WebElement element) {
-
         wait.until(ExpectedConditions.elementToBeClickable(element)).click();
     }
-    public void fillField(WebElement element, String text){
+
+    public void fillField(WebElement element, String text) {
         wait.until(ExpectedConditions.elementToBeClickable(element)).clear();
         element.sendKeys(text);
     }
-    public void fillField(WebElement element, int number){
-        wait.until(ExpectedConditions.elementToBeClickable(element)).clear();
-        element.sendKeys(String.valueOf(number));
-    }
-    public WebDriverWait getWaiter(){
+
+    public WebDriverWait getWaiter() {
         return wait;
     }
-    /*@After
-    public void quit(){
-        DriverManager.closeDriver();
-    }*/
-    public byte[] takeScreenshot(){
+
+    public byte[] takeScreenshot() {
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
     }
-    public Integer getProductPriceFromString(String price){
+
+    public Integer getProductPriceFromString(String price) {
         StringBuilder builder = new StringBuilder();
-        for(char x : price.toCharArray()){
-            if(Character.isDigit(x)) builder.append(x);
+        for (char x : price.toCharArray()) {
+            if (Character.isDigit(x)) builder.append(x);
         }
         return Integer.parseInt(builder.toString());
     }

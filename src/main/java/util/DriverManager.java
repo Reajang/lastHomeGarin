@@ -37,7 +37,6 @@ public class DriverManager {
         driver.manage().window().maximize();
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-        //driver.get(url);
     }
 
     public static void closeDriver() {

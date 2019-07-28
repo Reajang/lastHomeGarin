@@ -1,14 +1,13 @@
 package pages;
 
+import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import util.DriverManager;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ShopPage extends BasePage {
 
@@ -22,6 +21,12 @@ public class ShopPage extends BasePage {
     private WebElement maxPrice;
     @FindBy(xpath = "//input[@data-test-id='range-filter-from-input']")
     private WebElement minPrice;
+    @FindBy(xpath = "//div[@class='active-filters']/descendant::span[contains(text(), 'Цена')]")
+    private WebElement filterPrice;
+    @FindBy(xpath = "//span[@class='show'][1]")
+    private WebElement brandsBar;
+    @FindBy(xpath = "//div[@class='input-wrap search-input m-low-height']/input")
+    private WebElement inputBrand;
 
     public WebElement getMaxPrice() {
         return maxPrice;
@@ -35,51 +40,25 @@ public class ShopPage extends BasePage {
         return minPrice;
     }
 
-    /*public void addProductToBasket(WebElement product){
-            WebElement buttonAdd = product.findElement(By.xpath("/descendant::button[@class='button blue enlarged buy-text-button']"));
-            JavascriptExecutor js = (JavascriptExecutor) DriverManager.getDriver();
-            js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", buttonAdd);
-            clickElem(buttonAdd);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            //this.getWaiter().until(ExpectedConditions.invisibilityOf(buttonAdd.findElement(By.xpath("//child::span"))));
-        }*/
-    public WebElement getElementFromGoodsList(int num) {
-        return DriverManager.getDriver().findElement(By.xpath(String.format("//div[@class='tile m-default m-border'][%d]", num)));
-        //return allGoods.get(num);
-    }
-
-    /*public String getProductPrice(WebElement product){
-        WebElement price = product.findElement(By.xpath("/descendant::span[@data-test-id='tile-price']"));
-        return price.getText();
-    }
-    public String getProductName(WebElement product){
-        WebElement name = product.findElement(By.xpath("/descendant::a[@data-test-id='tile-name']"));
-        return name.getText();
-    }*/
-    public String getProductPrice(int num) {
-        WebElement price = DriverManager.getDriver().findElement(By.xpath(String.format("(//div[@class='tile m-default m-border']/descendant::span[@data-test-id='tile-price'])[%d]", num)));
-        return price.getText();
-    }
-
-    public String getProductName(int num) {
-        WebElement name = DriverManager.getDriver().findElement(By.xpath(String.format("(//div[@class='tile m-default m-border']/descendant::a[@data-test-id='tile-name'])[%d]", num)));
-        return name.getText();
-    }
-
-    public void addProductToBasket(int num) {
-        WebElement buttonAdd = DriverManager.getDriver().findElement(By.xpath(String.format("(//div[@class='tile m-default m-border']/descendant::button[@class='button blue enlarged buy-text-button'])[%d]", num)));
+    public void addProductToBasket(WebElement product) {
+        WebElement buttonAdd = product.findElement(By.xpath("./descendant::button[@class='button blue enlarged buy-text-button']"));
         js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", buttonAdd);
         clickElem(buttonAdd);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //this.getWaiter().until(ExpectedConditions.invisibilityOf(buttonAdd.findElement(By.xpath("//child::span"))));
+        this.getWaiter().until(ExpectedConditions.textToBePresentInElement(product.findElement(By.xpath("./descendant::span[@class='count']")), "1 шт"));
+    }
+
+    public WebElement getElementFromGoodsList(int num) {
+        return allGoods.get(num);
+    }
+
+    public String getProductPrice(WebElement product) {
+        WebElement price = product.findElement(By.xpath("./descendant::span[@data-test-id='tile-price']"));
+        return price.getText();
+    }
+
+    public String getProductName(WebElement product) {
+        WebElement name = product.findElement(By.xpath("./descendant::a[@data-test-id='tile-name']"));
+        return name.getText();
     }
 
     public void selectBrand(String... names) {
@@ -87,15 +66,17 @@ public class ShopPage extends BasePage {
     }
 
     public void selectBrand(List<String> names) {
-        WebElement qwe = DriverManager.getDriver().findElement(By.xpath("//span[@class='show'][1]"));
-        js.executeScript("return arguments[0].scrollIntoViewIfNeeded(true);", qwe);
-        clickElem(qwe);
-        WebElement inputBrand = DriverManager.getDriver().findElement(By.xpath("//div[@class='input-wrap search-input m-low-height']/input"));
-
+        js.executeScript("return arguments[0].scrollIntoViewIfNeeded(true);", brandsBar);
+        clickElem(brandsBar);
+        String filterShow = "//div[@class='active-filters']/descendant::span[contains(text(), '%s')]";
         for (String name : names) {
             clickElem(inputBrand);
             fillField(inputBrand, name + "\n");
-
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(String.format(filterShow, name))));
         }
+    }
+
+    public WebElement getFilterPrice() {
+        return filterPrice;
     }
 }

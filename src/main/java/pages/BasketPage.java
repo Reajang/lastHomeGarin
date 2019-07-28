@@ -34,7 +34,7 @@ public class BasketPage extends BasePage {
     }
 
     public Map<String, String> baskerContains(){
-        //if (listOfBuys.isEmpty()) return null;
+        if (listOfBuys.isEmpty()) return null;
         Map<String, String> res = new LinkedHashMap<>();
         for(int i = 1; i<=listOfBuys.size(); i++){
             String name = DriverManager.getDriver().findElement(By.xpath(String.format("(//div[@class='bottom-inner-wrap']//descendant::a[@class='title'])[%d]", i))).getText();
@@ -44,9 +44,6 @@ public class BasketPage extends BasePage {
         return res;
     }
     public void cleanBasket(){
-        /*String checkSelectingAll = selectAllProducts.findElement(By.xpath("//div")).getAttribute("class");
-        if(!checkSelectingAll.equals("checkbox mActive"))
-            clickElem(selectAllProducts);*/
         clickElem(delAllSelected);
         clickElem(confirmDelete);
     }

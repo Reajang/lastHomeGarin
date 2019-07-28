@@ -16,7 +16,7 @@ public class MainPage extends BasePage {
     @FindBy(xpath = "//button[@data-test-id='header-search-go']")
     private WebElement searchButton;
 
-    //Временные
+
     @FindBy(xpath = "//span[@data-test-id='header-my-ozon-title']")
     private WebElement getIn;
     @FindBy(xpath = "//span[contains(text(), 'Корзина')]")
@@ -34,17 +34,16 @@ public class MainPage extends BasePage {
     @FindBy(xpath = "//button[@data-test-id='loginFormSubmitButton']")
     private WebElement inputButton;
 
-    public void logIn(String login, String password){
-        //clickElem(findElemByName(mainBar, "Войти"));
-        DriverManager.getDriver().navigate().refresh();
+    public void logIn(String login, String password) {
+        driver.navigate().refresh();
         clickElem(getIn);
         clickElem(goToEmailLink);
         fillField(emailInput, login);
         fillField(passwordInput, password);
         clickElem(inputButton);
-
     }
-    public void logOut(){
+
+    public void logOut() {
         WebElement quit = findElemByName(mainBar, "Кабинет");
         clickElem(quit);
         clickElem(quit.findElement(By.xpath("//button[@class='eda59']")));
@@ -62,7 +61,13 @@ public class MainPage extends BasePage {
         return mainBar;
     }
 
-    public WebElement getGoToBasket() {
-        return goToBasket;
+    public WebElement getLogInForm() {
+        return logInForm;
     }
+
+    public void goToBasket() {
+        clickElem(goToBasket);
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='content']/descendant::*[contains(text(), 'Корзина')]")));
+    }
+
 }
